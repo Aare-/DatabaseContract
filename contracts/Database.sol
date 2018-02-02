@@ -11,4 +11,12 @@ contract Database {
 
         registeredAddresses[addressToRegister] = true;
     }
+
+    function deRegisterAddress(address addressToDeRegister)
+        public
+    {
+        require(registeredAddresses[addressToDeRegister]);
+
+        registeredAddresses[addressToDeRegister] = false;
+    }
 }

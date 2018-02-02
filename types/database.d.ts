@@ -30,6 +30,10 @@ declare module 'database' {
         registerAddress(
             addressToRegister: Address
         ): Promise<TransactionResult>;
+
+        deRegisterAddress(
+            addressToDeRegister: Address
+        ): Promise<TransactionResult>;
     }
 
     interface DatabaseContract extends Contract<DatabaseBase> {

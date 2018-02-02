@@ -28,8 +28,19 @@ contract('DatabaseBase', accounts => {
         }));
         it('should disallow adding duplicate addresses', () => __awaiter(this, void 0, void 0, function* () {
             yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
-                yield yield dContract.registerAddress(user1);
-                yield yield dContract.registerAddress(user1);
+                yield dContract.registerAddress(user1);
+                yield dContract.registerAddress(user1);
+            }));
+        }));
+    });
+    describe('#addressDeletion', () => {
+        it('should allow to delete an address', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.deRegisterAddress(user1);
+        }));
+        it('should revert when attempted to de-register not registered address', () => __awaiter(this, void 0, void 0, function* () {
+            yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
+                yield dContract.deRegisterAddress(user1);
             }));
         }));
     });

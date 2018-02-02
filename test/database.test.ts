@@ -36,4 +36,18 @@ contract('DatabaseBase', accounts => {
             });
         });
     });
+
+    describe('#addressDeletion', () => {
+        it('should allow to delete an address', async () => {
+            await dContract.registerAddress(user1);
+            await dContract.deRegisterAddress(user1);
+        });
+
+        it('should revert when attempted to de-register not registered address',
+            async () => {
+                await assertReverts( async () => {
+                    await dContract.deRegisterAddress(user1);
+                });
+            });
+    });
 });
