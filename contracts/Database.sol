@@ -19,4 +19,12 @@ contract Database {
 
         registeredAddresses[addressToDeRegister] = false;
     }
+
+    function isAddressRegistered(address addressToCheck)
+        view
+        public
+        returns(bool)
+    {
+        return registeredAddresses[addressToCheck];
+    }
 }

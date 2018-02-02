@@ -13,6 +13,7 @@ const DatabaseContract = artifacts.require('./Database.sol');
 contract('DatabaseBase', accounts => {
     let dContract: DatabaseBase;
     const user1 = accounts[1];
+    const user2 = accounts[2];
 
     beforeEach(async () => {
         dContract = await DatabaseContract.new();
@@ -49,5 +50,17 @@ contract('DatabaseBase', accounts => {
                     await dContract.deRegisterAddress(user1);
                 });
             });
+    });
+
+    describe('#registrationStatus', () => {
+        it('should correctly report registered addresses', async () => {
+            await dContract.registerAddress(user1);
+            assert.isTrue(await dContract.isAddressRegistered(user1));
+        });
+
+        it('should correctly report not registered addresses', async () => {
+            await dContract.deRegisterAddress(user2);
+            assert.isFalse(await dContract.isAddressRegistered(user1));
+        });
     });
 });

@@ -14,6 +14,7 @@ const DatabaseContract = artifacts.require('./Database.sol');
 contract('DatabaseBase', accounts => {
     let dContract;
     const user1 = accounts[1];
+    const user2 = accounts[2];
     beforeEach(() => __awaiter(this, void 0, void 0, function* () {
         dContract = yield DatabaseContract.new();
     }));
@@ -42,6 +43,16 @@ contract('DatabaseBase', accounts => {
             yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
                 yield dContract.deRegisterAddress(user1);
             }));
+        }));
+    });
+    describe('#registrationStatus', () => {
+        it('should correctly report registered addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            chai_1.assert.isTrue(yield dContract.isAddressRegistered(user1));
+        }));
+        it('should correctly report not registered addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.deRegisterAddress(user2);
+            chai_1.assert.isFalse(yield dContract.isAddressRegistered(user1));
         }));
     });
 });

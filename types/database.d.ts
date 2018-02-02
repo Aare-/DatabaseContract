@@ -34,6 +34,10 @@ declare module 'database' {
         deRegisterAddress(
             addressToDeRegister: Address
         ): Promise<TransactionResult>;
+
+        isAddressRegistered(
+            addressToCheck: Address
+        ): Promise<boolean>;
     }
 
     interface DatabaseContract extends Contract<DatabaseBase> {
