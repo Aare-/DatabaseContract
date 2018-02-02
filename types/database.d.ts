@@ -28,7 +28,13 @@ declare module 'database' {
     }
 
     interface DatabaseContract {
-        'new'( options?: TransactionOptions ): Promise<DatabaseContract>;
+        'new'(
+            options?: TransactionOptions
+        ): Promise<DatabaseContract>;
+
+        'registerAddress'(
+            address: Address
+        ): Promise<Boolean>;
     }
 
     interface DatabaseArtifacts extends TruffleArtifacts {
