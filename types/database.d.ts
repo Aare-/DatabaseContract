@@ -1,5 +1,4 @@
 declare module 'database' {
-  import { BigNumber } from 'bignumber.js';
   import {
     AnyContract,
     Contract,
@@ -27,14 +26,16 @@ declare module 'database' {
         'new'(options?: TransactionOptions): Promise<Migrations>;
     }
 
-    interface DatabaseContract {
+    interface DatabaseBase extends ContractBase {
+        registerAddress(
+            addressToRegister: Address
+        ): Promise<TransactionResult>;
+    }
+
+    interface DatabaseContract extends Contract<DatabaseBase> {
         'new'(
             options?: TransactionOptions
-        ): Promise<DatabaseContract>;
-
-        'registerAddress'(
-            address: Address
-        ): Promise<Boolean>;
+        ): Promise<DatabaseBase>;
     }
 
     interface DatabaseArtifacts extends TruffleArtifacts {

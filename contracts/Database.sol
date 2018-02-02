@@ -1,15 +1,14 @@
-pragma solidity 0.4.19;
+pragma solidity 0.4.18;
 
 contract Database {
 
-    function Database()
-        public
-    {
-    }
+    mapping (address => bool) registeredAddresses;
 
     function registerAddress(address addressToRegister)
         public
     {
+        require(!registeredAddresses[addressToRegister]);
 
+        registeredAddresses[addressToRegister] = true;
     }
 }

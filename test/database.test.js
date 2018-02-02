@@ -8,45 +8,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const assert = require("assert");
+const chai_1 = require("chai");
 const helpers_1 = require("./helpers");
 const DatabaseContract = artifacts.require('./Database.sol');
-contract('Database', accounts => {
+contract('DatabaseBase', accounts => {
+    let dContract;
     const user1 = accounts[1];
-    const user2 = accounts[2];
-    function createContract() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield DatabaseContract.new();
-        });
-    }
-    describe("#ctor", () => {
+    beforeEach(() => __awaiter(this, void 0, void 0, function* () {
+        dContract = yield DatabaseContract.new();
+    }));
+    describe('"#ctor', () => {
         it('should successfully create contract', () => __awaiter(this, void 0, void 0, function* () {
-            const contract = yield createContract();
-            assert.equal(contract != null, true);
+            chai_1.assert.isNotNull(dContract);
         }));
     });
-    describe("#addressAddition", () => {
+    describe('#addressAddition', () => {
         it('should allow to add addresses', () => __awaiter(this, void 0, void 0, function* () {
-            const contract = yield createContract();
-            assert.equal(yield contract.registerAddress(user1), true);
+            yield dContract.registerAddress(user1);
         }));
         it('should disallow adding duplicate addresses', () => __awaiter(this, void 0, void 0, function* () {
-            const contract = yield createContract();
-            assert.equal(yield contract.registerAddress(user2), true);
-            assert.equal(yield contract.registerAddress(user2), false);
-        }));
-        it('should revert if empty address is provided', () => __awaiter(this, void 0, void 0, function* () {
-            const contract = yield createContract();
-            const emptyAddress = '';
             yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
-                yield contract.registerAddress(emptyAddress);
-            }));
-        }));
-        it('should revert if incorrect address is provided', () => __awaiter(this, void 0, void 0, function* () {
-            const contract = yield createContract();
-            const incorrectAddress = 'veryIncorrectAddress';
-            yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
-                yield contract.registerAddress(incorrectAddress);
+                yield yield dContract.registerAddress(user1);
+                yield yield dContract.registerAddress(user1);
             }));
         }));
     });
