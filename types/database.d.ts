@@ -38,6 +38,8 @@ declare module 'database' {
         isAddressRegistered(
             addressToCheck: Address
         ): Promise<boolean>;
+
+        getAllAddresses(): Promise<Address[]>;
     }
 
     interface DatabaseContract extends Contract<DatabaseBase> {

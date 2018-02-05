@@ -61,4 +61,17 @@ contract('DatabaseBase', accounts => {
             chai_1.assert.isFalse(yield dContract.isAddressRegistered(user1));
         }));
     });
+    describe('#addressesListing', () => {
+        it('on initialisation should list empty list', () => __awaiter(this, void 0, void 0, function* () {
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.isArray(addressesList);
+            chai_1.assert.deepEqual(addressesList, []);
+        }));
+        it('should return registered address', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.isArray(addressesList);
+            chai_1.assert.deepEqual(addressesList, [user1]);
+        }));
+    });
 });

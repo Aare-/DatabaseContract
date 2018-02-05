@@ -72,4 +72,21 @@ contract('DatabaseBase', accounts => {
                 assert.isFalse(await dContract.isAddressRegistered(user1));
             });
     });
+
+    describe('#addressesListing', () => {
+       it('on initialisation should list empty list', async () => {
+           const addressesList = await dContract.getAllAddresses();
+
+           assert.isArray(addressesList);
+           assert.deepEqual(addressesList, []);
+       });
+
+       it('should return registered address', async () => {
+           await dContract.registerAddress(user1);
+           const addressesList = await dContract.getAllAddresses();
+
+           assert.isArray(addressesList);
+           assert.deepEqual(addressesList, [user1]);
+       });
+    });
 });
