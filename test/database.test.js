@@ -15,6 +15,7 @@ contract('DatabaseBase', accounts => {
     let dContract;
     const user1 = accounts[1];
     const user2 = accounts[2];
+    const user3 = accounts[3];
     beforeEach(() => __awaiter(this, void 0, void 0, function* () {
         dContract = yield DatabaseContract.new();
     }));
@@ -64,14 +65,58 @@ contract('DatabaseBase', accounts => {
     describe('#addressesListing', () => {
         it('on initialisation should list empty list', () => __awaiter(this, void 0, void 0, function* () {
             const addressesList = yield dContract.getAllAddresses();
-            chai_1.assert.isArray(addressesList);
             chai_1.assert.deepEqual(addressesList, []);
         }));
         it('should return registered address', () => __awaiter(this, void 0, void 0, function* () {
             yield dContract.registerAddress(user1);
             const addressesList = yield dContract.getAllAddresses();
-            chai_1.assert.isArray(addressesList);
             chai_1.assert.deepEqual(addressesList, [user1]);
+        }));
+        it('should return multiple registered addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.deepEqual(addressesList, [user3, user2, user1]);
+        }));
+        it('should correctly return addresses after deletion of the first', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            yield dContract.deRegisterAddress(user1);
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.deepEqual(addressesList, [user3, user2]);
+        }));
+        it('should correctly return addresses after deletion of the last', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            yield dContract.deRegisterAddress(user3);
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.deepEqual(addressesList, [user2, user1]);
+        }));
+        it('should correctly return addresses after deletion of the middle', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            yield dContract.deRegisterAddress(user2);
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.deepEqual(addressesList, [user3, user1]);
+        }));
+        it('should correctly return addresses after multiple operations', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            yield dContract.deRegisterAddress(user1);
+            yield dContract.registerAddress(user1);
+            yield dContract.deRegisterAddress(user2);
+            yield dContract.deRegisterAddress(user3);
+            yield dContract.registerAddress(user3);
+            yield dContract.deRegisterAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user1);
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.deepEqual(addressesList, [user1, user2, user3]);
         }));
     });
 });

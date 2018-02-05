@@ -14,6 +14,7 @@ contract('DatabaseBase', accounts => {
     let dContract: DatabaseBase;
     const user1 = accounts[1];
     const user2 = accounts[2];
+    const user3 = accounts[3];
 
     beforeEach(async () => {
         dContract = await DatabaseContract.new();
@@ -77,7 +78,6 @@ contract('DatabaseBase', accounts => {
        it('on initialisation should list empty list', async () => {
            const addressesList = await dContract.getAllAddresses();
 
-           assert.isArray(addressesList);
            assert.deepEqual(addressesList, []);
        });
 
@@ -85,8 +85,71 @@ contract('DatabaseBase', accounts => {
            await dContract.registerAddress(user1);
            const addressesList = await dContract.getAllAddresses();
 
-           assert.isArray(addressesList);
            assert.deepEqual(addressesList, [user1]);
        });
+
+       it('should return multiple registered addresses', async () => {
+           await dContract.registerAddress(user1);
+           await dContract.registerAddress(user2);
+           await dContract.registerAddress(user3);
+           const addressesList = await dContract.getAllAddresses();
+
+           assert.deepEqual(addressesList, [user3, user2, user1]);
+       });
+
+       it('should correctly return addresses after deletion of the first',
+           async () => {
+               await dContract.registerAddress(user1);
+               await dContract.registerAddress(user2);
+               await dContract.registerAddress(user3);
+               await dContract.deRegisterAddress(user1);
+
+               const addressesList = await dContract.getAllAddresses();
+
+               assert.deepEqual(addressesList, [user3, user2]);
+           });
+
+       it('should correctly return addresses after deletion of the last',
+           async () => {
+               await dContract.registerAddress(user1);
+               await dContract.registerAddress(user2);
+               await dContract.registerAddress(user3);
+               await dContract.deRegisterAddress(user3);
+
+               const addressesList = await dContract.getAllAddresses();
+
+               assert.deepEqual(addressesList, [user2, user1]);
+           });
+
+       it('should correctly return addresses after deletion of the middle',
+           async () => {
+               await dContract.registerAddress(user1);
+               await dContract.registerAddress(user2);
+               await dContract.registerAddress(user3);
+               await dContract.deRegisterAddress(user2);
+
+               const addressesList = await dContract.getAllAddresses();
+
+               assert.deepEqual(addressesList, [user3, user1]);
+           });
+
+       it('should correctly return addresses after multiple operations',
+           async () => {
+               await dContract.registerAddress(user1);
+               await dContract.registerAddress(user2);
+               await dContract.registerAddress(user3);
+               await dContract.deRegisterAddress(user1);
+               await dContract.registerAddress(user1);
+               await dContract.deRegisterAddress(user2);
+               await dContract.deRegisterAddress(user3);
+               await dContract.registerAddress(user3);
+               await dContract.deRegisterAddress(user1);
+               await dContract.registerAddress(user2);
+               await dContract.registerAddress(user1);
+
+               const addressesList = await dContract.getAllAddresses();
+
+               assert.deepEqual(addressesList, [user1, user2, user3]);
+           });
     });
 });
