@@ -134,5 +134,15 @@ contract('DatabaseBase', accounts => {
             const addressesList = yield dContract.getAllAddresses();
             chai_1.assert.deepEqual(addressesList, []);
         }));
+        it('single address deletion should cost less than 10000 gas', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            const transactionReceipt1 = yield dContract.deRegisterAll();
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            const transactionReceipt2 = yield dContract.deRegisterAll();
+            const gasUsageDelta = transactionReceipt2.receipt.gasUsed -
+                transactionReceipt1.receipt.gasUsed;
+            chai_1.assert.isBelow(gasUsageDelta, 10000);
+        }));
     });
 });

@@ -171,5 +171,20 @@ contract('DatabaseBase', accounts => {
 
             assert.deepEqual(addressesList, []);
         });
+
+        it('single address deletion should cost less than 10000 gas',
+            async () => {
+                await dContract.registerAddress(user1);
+                const transactionReceipt1 = await dContract.deRegisterAll();
+
+                await dContract.registerAddress(user1);
+                await dContract.registerAddress(user2);
+                const transactionReceipt2 = await dContract.deRegisterAll();
+
+                const gasUsageDelta = transactionReceipt2.receipt.gasUsed -
+                    transactionReceipt1.receipt.gasUsed;
+
+                assert.isBelow(gasUsageDelta, 10000);
+            });
     });
 });

@@ -5,13 +5,11 @@ contract Database {
     struct RegistrationData {
         address next;
         address prev;
-        uint32 revision;
     }
 
     mapping (address => RegistrationData) private registeredAddresses;
     address private firstAddress;
     uint private addressCount = 0;
-    uint32 private currentRevision = 1;
 
     function registerAddress(address addressToRegister)
         public
@@ -25,8 +23,7 @@ contract Database {
         registeredAddresses[addressToRegister] =
             RegistrationData({
                 next: pointerToNextAddress,
-                prev: 0,
-                revision: currentRevision
+                prev: 0
             });
 
         if(firstAddress != 0) {
@@ -94,9 +91,13 @@ contract Database {
     function deRegisterAll()
         public
     {
-        uint32 addResult = currentRevision + 1;
-        require(addResult >= currentRevision);
-        currentRevision = addResult;
+        address addressPointer = firstAddress;
+
+        for(uint i = 0; i < addressCount; i++) {
+            address nextAddressPointer = registeredAddresses[addressPointer].next;
+            delete registeredAddresses[addressPointer];
+            addressPointer = nextAddressPointer;
+        }
 
         addressCount = 0;
         firstAddress = 0;
@@ -107,7 +108,6 @@ contract Database {
         public
         returns(bool)
     {
-        return
-            registeredAddresses[addressToCheck].revision == currentRevision;
+        return registeredAddresses[addressToCheck].next != 0;
     }
 }
