@@ -119,4 +119,20 @@ contract('DatabaseBase', accounts => {
             chai_1.assert.deepEqual(addressesList, [user1, user2, user3]);
         }));
     });
+    describe('#batchAddressDeletion', () => {
+        it('should delete all registered addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.deRegisterAll();
+            chai_1.assert.isFalse(yield dContract.isAddressRegistered(user1));
+            chai_1.assert.isFalse(yield dContract.isAddressRegistered(user2));
+        }));
+        it('should not list any addresses after deletion', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.deRegisterAll();
+            const addressesList = yield dContract.getAllAddresses();
+            chai_1.assert.deepEqual(addressesList, []);
+        }));
+    });
 });

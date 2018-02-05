@@ -2,15 +2,14 @@ pragma solidity 0.4.18;
 
 contract Database {
 
-    struct data {
+    struct RegistrationData {
         address next;
         address prev;
     }
 
-    uint addressCount = 0;
+    mapping (address => RegistrationData) registeredAddresses;
     address firstAddress;
-
-    mapping (address => data) registeredAddresses;
+    uint addressCount = 0;
 
     function registerAddress(address addressToRegister)
         public
@@ -21,17 +20,16 @@ contract Database {
             firstAddress == 0 ?
                 addressToRegister :
                 firstAddress;
-        data memory registrationData =
-            data({
+        registeredAddresses[addressToRegister] =
+            RegistrationData({
                 next: pointerToNextAddress,
                 prev: 0
             });
 
-        registeredAddresses[addressToRegister] = registrationData;
-
         if(firstAddress != 0) {
             registeredAddresses[firstAddress].prev = addressToRegister;
         }
+
         firstAddress = addressToRegister;
         addressCount += 1;
     }
@@ -88,6 +86,21 @@ contract Database {
         }
 
         return addressList;
+    }
+
+    function deRegisterAll()
+        public
+    {
+        address currentAddressPointer = firstAddress;
+
+        for(uint i = 0; i < addressCount; i++) {
+            address nextPointer =
+                registeredAddresses[currentAddressPointer].next;
+            delete registeredAddresses[currentAddressPointer];
+            currentAddressPointer = nextPointer;
+        }
+
+        addressCount = 0;
     }
 
     function isAddressRegistered(address addressToCheck)

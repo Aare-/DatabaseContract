@@ -152,4 +152,24 @@ contract('DatabaseBase', accounts => {
                assert.deepEqual(addressesList, [user1, user2, user3]);
            });
     });
+
+    describe('#batchAddressDeletion', () => {
+        it('should delete all registered addresses', async () => {
+            await dContract.registerAddress(user1);
+            await dContract.registerAddress(user2);
+            await dContract.deRegisterAll();
+
+            assert.isFalse(await dContract.isAddressRegistered(user1));
+            assert.isFalse(await dContract.isAddressRegistered(user2));
+        });
+
+        it('should not list any addresses after deletion', async () => {
+            await dContract.registerAddress(user1);
+            await dContract.registerAddress(user2);
+            await dContract.deRegisterAll();
+            const addressesList = await dContract.getAllAddresses();
+
+            assert.deepEqual(addressesList, []);
+        });
+    });
 });

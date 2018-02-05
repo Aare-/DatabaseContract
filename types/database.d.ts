@@ -40,6 +40,8 @@ declare module 'database' {
         ): Promise<boolean>;
 
         getAllAddresses(): Promise<Address[]>;
+
+        deRegisterAll(): Promise<TransactionResult>;
     }
 
     interface DatabaseContract extends Contract<DatabaseBase> {
