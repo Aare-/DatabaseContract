@@ -31,8 +31,9 @@ contract('DatabaseBase', accounts => {
         });
 
         it('should disallow adding duplicate addresses', async () => {
+            await dContract.registerAddress(user1);
+
             await assertReverts(async () => {
-                await dContract.registerAddress(user1);
                 await dContract.registerAddress(user1);
             });
         });
@@ -42,6 +43,7 @@ contract('DatabaseBase', accounts => {
         it('should allow to delete an address', async () => {
             await dContract.registerAddress(user1);
             await dContract.deRegisterAddress(user1);
+            assert.isFalse(await dContract.isAddressRegistered(user1));
         });
 
         it('should revert when attempted to de-register not registered address',
@@ -59,8 +61,15 @@ contract('DatabaseBase', accounts => {
         });
 
         it('should correctly report not registered addresses', async () => {
-            await dContract.deRegisterAddress(user2);
             assert.isFalse(await dContract.isAddressRegistered(user1));
         });
+
+        it('should correctly report status after insertion and deletion',
+            async () => {
+                await dContract.registerAddress(user1);
+                assert.isTrue(await dContract.isAddressRegistered(user1));
+                await dContract.deRegisterAddress(user1);
+                assert.isFalse(await dContract.isAddressRegistered(user1));
+            });
     });
 });

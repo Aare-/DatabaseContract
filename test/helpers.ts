@@ -11,7 +11,7 @@ declare const web3: Web3;
 
 export const ZERO_ADDRESS = '0x' + '0'.repeat(40);
 
-export async function assertReverts(func: () => void) {
+export async function assertReverts(func: () => Promise<void>) {
   try {
     await func();
   } catch (error) {

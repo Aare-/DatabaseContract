@@ -28,8 +28,8 @@ contract('DatabaseBase', accounts => {
             yield dContract.registerAddress(user1);
         }));
         it('should disallow adding duplicate addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
             yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
-                yield dContract.registerAddress(user1);
                 yield dContract.registerAddress(user1);
             }));
         }));
@@ -38,6 +38,7 @@ contract('DatabaseBase', accounts => {
         it('should allow to delete an address', () => __awaiter(this, void 0, void 0, function* () {
             yield dContract.registerAddress(user1);
             yield dContract.deRegisterAddress(user1);
+            chai_1.assert.isFalse(yield dContract.isAddressRegistered(user1));
         }));
         it('should revert when attempted to de-register not registered address', () => __awaiter(this, void 0, void 0, function* () {
             yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
@@ -51,7 +52,12 @@ contract('DatabaseBase', accounts => {
             chai_1.assert.isTrue(yield dContract.isAddressRegistered(user1));
         }));
         it('should correctly report not registered addresses', () => __awaiter(this, void 0, void 0, function* () {
-            yield dContract.deRegisterAddress(user2);
+            chai_1.assert.isFalse(yield dContract.isAddressRegistered(user1));
+        }));
+        it('should correctly report status after insertion and deletion', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            chai_1.assert.isTrue(yield dContract.isAddressRegistered(user1));
+            yield dContract.deRegisterAddress(user1);
             chai_1.assert.isFalse(yield dContract.isAddressRegistered(user1));
         }));
     });

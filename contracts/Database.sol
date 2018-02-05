@@ -2,22 +2,26 @@ pragma solidity 0.4.18;
 
 contract Database {
 
-    mapping (address => bool) registeredAddresses;
+    struct data {
+        bool isRegistered;
+    }
+
+    mapping (address => data) registeredAddresses;
 
     function registerAddress(address addressToRegister)
         public
     {
-        require(!registeredAddresses[addressToRegister]);
+        require(!registeredAddresses[addressToRegister].isRegistered);
 
-        registeredAddresses[addressToRegister] = true;
+        registeredAddresses[addressToRegister] = data({ isRegistered : true});
     }
 
     function deRegisterAddress(address addressToDeRegister)
         public
     {
-        require(registeredAddresses[addressToDeRegister]);
+        require(isAddressRegistered(addressToDeRegister));
 
-        registeredAddresses[addressToDeRegister] = false;
+        delete registeredAddresses[addressToDeRegister];
     }
 
     function isAddressRegistered(address addressToCheck)
@@ -25,6 +29,6 @@ contract Database {
         public
         returns(bool)
     {
-        return registeredAddresses[addressToCheck];
+        return registeredAddresses[addressToCheck].isRegistered;
     }
 }
