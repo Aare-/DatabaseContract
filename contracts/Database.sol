@@ -8,10 +8,10 @@ contract Database {
         uint32 registrationTime;
     }
 
-    mapping (address => RegistrationData) registeredAddresses;
-    address firstAddress;
-    uint addressCount = 0;
-    uint32 lastClearTime = 1;
+    mapping (address => RegistrationData) private registeredAddresses;
+    address private firstAddress;
+    uint private addressCount = 0;
+    uint32 private lastClearTime = 1;
 
     function registerAddress(address addressToRegister)
         public
