@@ -108,7 +108,6 @@ contract Database {
         returns(bool)
     {
         return
-            registeredAddresses[addressToCheck].registrationTime != 0 &&
             registeredAddresses[addressToCheck].registrationTime == lastClearTime;
     }
 }
