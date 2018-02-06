@@ -187,4 +187,35 @@ contract('DatabaseBase', accounts => {
                 assert.isBelow(gasUsageDelta, 10000);
             });
     });
+
+    describe('#getNextAddress', () => {
+        it('should correctly return address for given predecessor',
+            async () => {
+                await dContract.registerAddress(user1);
+                await dContract.registerAddress(user2);
+
+                const nextAddress = await dContract.getNextAddress(user2);
+                assert.deepEqual(nextAddress, user1);
+            });
+
+        it('should return same address when asked for the last address',
+            async () => {
+                await dContract.registerAddress(user1);
+                await dContract.registerAddress(user2);
+                await dContract.registerAddress(user3);
+
+                const nextAddress = await dContract.getNextAddress(user1);
+                assert.deepEqual(nextAddress, user1);
+            });
+
+        it('should return address(0) for not registered addresses',
+            async () => {
+                await dContract.registerAddress(user1);
+
+                const nextAddress = await dContract.getNextAddress(user2);
+                assert.deepEqual(
+                    nextAddress,
+                    '0x0000000000000000000000000000000000000000');
+            });
+    });
 });

@@ -7,7 +7,6 @@ declare module 'database' {
     TransactionResult,
     TruffleArtifacts
   } from 'truffle';
-  import { AnyNumber } from 'web3';
 
   namespace database {
     interface Migrations extends ContractBase {
@@ -42,6 +41,10 @@ declare module 'database' {
         getAllAddresses(): Promise<Address[]>;
 
         deRegisterAll(): Promise<TransactionResult>;
+
+        getNextAddress(
+            predecessorAddress: Address
+        ): Promise<Address>;
     }
 
     interface DatabaseCallerBase extends ContractBase {

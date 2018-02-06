@@ -145,4 +145,24 @@ contract('DatabaseBase', accounts => {
             chai_1.assert.isBelow(gasUsageDelta, 10000);
         }));
     });
+    describe('#getNextAddress', () => {
+        it('should correctly return address for given predecessor', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            const nextAddress = yield dContract.getNextAddress(user2);
+            chai_1.assert.deepEqual(nextAddress, user1);
+        }));
+        it('should return same address when asked for the last address', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            const nextAddress = yield dContract.getNextAddress(user1);
+            chai_1.assert.deepEqual(nextAddress, user1);
+        }));
+        it('should return address(0) for not registered addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            const nextAddress = yield dContract.getNextAddress(user2);
+            chai_1.assert.deepEqual(nextAddress, '0x0000000000000000000000000000000000000000');
+        }));
+    });
 });
