@@ -19,7 +19,7 @@ contract('DatabaseBase', accounts => {
     beforeEach(() => __awaiter(this, void 0, void 0, function* () {
         dContract = yield DatabaseContract.new();
     }));
-    describe('"#ctor', () => {
+    describe('#ctor', () => {
         it('should successfully create contract', () => __awaiter(this, void 0, void 0, function* () {
             chai_1.assert.isNotNull(dContract);
         }));

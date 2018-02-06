@@ -8,8 +8,8 @@ contract Database {
     }
 
     mapping (address => RegistrationData) private registeredAddresses;
-    address private firstAddress;
-    uint private addressCount = 0;
+    address public firstAddress;
+    uint public addressCount = 0;
 
     function registerAddress(address addressToRegister)
         public
@@ -109,5 +109,13 @@ contract Database {
         returns(bool)
     {
         return registeredAddresses[addressToCheck].next != 0;
+    }
+
+    function getNextAddress(address predecessor)
+        view
+        public
+        returns(address)
+    {
+        return registeredAddresses[predecessor].next;
     }
 }

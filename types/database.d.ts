@@ -44,16 +44,29 @@ declare module 'database' {
         deRegisterAll(): Promise<TransactionResult>;
     }
 
+    interface DatabaseCallerBase extends ContractBase {
+        collectData(
+            databaseAddress: Address
+        ): Promise<Address[]>;
+    }
+
     interface DatabaseContract extends Contract<DatabaseBase> {
         'new'(
             options?: TransactionOptions
         ): Promise<DatabaseBase>;
     }
 
+    interface DatabaseCallerContract extends Contract<DatabaseCallerBase> {
+        'new'(
+            options?: TransactionOptions
+        ): Promise<DatabaseCallerBase>;
+    }
+
     interface DatabaseArtifacts extends TruffleArtifacts {
       require(name: string): AnyContract;
       require(name: './Migrations.sol'): MigrationsContract;
       require(name: './Database.sol'): DatabaseContract;
+      require(name: './DatabaseCaller.sol'): DatabaseCallerContract;
     }
   }
 

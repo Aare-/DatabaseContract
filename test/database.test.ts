@@ -20,7 +20,7 @@ contract('DatabaseBase', accounts => {
         dContract = await DatabaseContract.new();
     });
 
-    describe('"#ctor', () => {
+    describe('#ctor', () => {
         it('should successfully create contract', async () => {
             assert.isNotNull(dContract);
         });
