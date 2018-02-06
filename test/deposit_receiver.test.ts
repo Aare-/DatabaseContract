@@ -1,16 +1,14 @@
 import BigNumber from 'bignumber.js';
 import { assert } from 'chai';
 import {
-    DatabaseArtifacts, DatabaseBase, DatabaseCallerBase,
-    DatabaseCallerContract, DatabaseContract, DepositReceiverBase
+    DatabaseArtifacts, DatabaseBase, DepositReceiverBase
 } from 'database';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
-import {fromEth, fromFinney, fromGwei, fromKwei} from '../utils';
+import {fromEth, fromGwei} from '../utils';
 import {promisify} from '../utils/common';
 import {
-    assertNumberAlmostEqual, assertNumberEqual,
-    assertReverts
+    assertNumberEqual, assertReverts
 } from './helpers';
 
 declare const web3: Web3;
@@ -25,6 +23,7 @@ contract('DepositReceiver', accounts => {
     let depositReceiverContract: DepositReceiverBase;
 
     const user1 = accounts[1];
+    const user2 = accounts[2];
 
     const zeroAmount = new BigNumber(0);
     const singleDepositAmount = fromEth(0.1);
@@ -44,94 +43,94 @@ contract('DepositReceiver', accounts => {
     });
 
     describe('#deposit', () => {
-       it('should allow deposits from accounts registered in database',
-           async () => {
-                await dContract.registerAddress(user1);
+        beforeEach(async () => {
+            await dContract.registerAddress(user1);
+        });
 
+        it('should allow deposits from accounts registered in database',
+           async () => {
                 await depositReceiverContract
                     .deposit({
                         from: user1,
                         value: singleDepositAmount
                     });
+
+                const balanceAfterDeposit =
+                   await depositReceiverContract.getBalance({from: user1});
+
+                assertNumberEqual(balanceAfterDeposit, singleDepositAmount);
            });
 
-       it('should revert deposits not registered in database',
+        it('should revert deposits not registered in database',
            async () => {
                await assertReverts(async () => {
                    await depositReceiverContract
                        .deposit({
-                           from: user1,
+                           from: user2,
                            value: singleDepositAmount
                        });
                });
            });
 
-       it('should stop accepting deposits from users removed from database',
-           async () => {
-               await dContract.registerAddress(user1);
+        it('should accept deposits sent to fallback function',
+            async () => {
+                await depositReceiverContract
+                    .sendTransaction({
+                        from: user1,
+                        value: singleDepositAmount
+                    });
 
-               await depositReceiverContract
-                   .deposit({
-                       from: user1,
-                       value: singleDepositAmount
-                   });
+                const balanceAfterDeposit =
+                    await depositReceiverContract.getBalance({from: user1});
 
-               await dContract.deRegisterAddress(user1);
-
-               await assertReverts(async () => {
-                   await depositReceiverContract
-                       .deposit({
-                           from: user1,
-                           value: singleDepositAmount
-                       });
-               });
-           });
+                assertNumberEqual(balanceAfterDeposit, singleDepositAmount);
+            });
     });
 
     describe('#balance', () => {
-       it('should revert when asked for balance of not registered address',
+        beforeEach(async () => {
+            await dContract.registerAddress(user1);
+        });
+
+        it('should revert when asked for balance of not registered address',
            async () => {
                 await assertReverts(async () => {
-                    await depositReceiverContract.getBalance({from: user1});
+                    await depositReceiverContract.getBalance({from: user2});
                 });
            });
 
-       it('should report empty for newly registered addresses',
+        it('should report empty for newly registered addresses',
            async () => {
-                await dContract.registerAddress(user1);
                 const accountBalance = await depositReceiverContract
                     .getBalance({from: user1});
 
                 assertNumberEqual(accountBalance, new BigNumber(0));
            });
 
-       it('should correctly report address balance',
+        it('should correctly report address balance',
            async () => {
-               const depositAmount = fromGwei(1);
-
-               await dContract.registerAddress(user1);
                await depositReceiverContract
-                   .sendTransaction({
+                   .deposit({
                        from: user1,
-                       value: depositAmount
+                       value: singleDepositAmount
                    });
                const accountBalance
                    = await depositReceiverContract.getBalance({from: user1});
 
-               assertNumberEqual(accountBalance, new BigNumber(depositAmount));
+               assertNumberEqual(
+                   accountBalance,
+                   new BigNumber(singleDepositAmount));
            });
 
-       it('should correctly report balance after multiple transfers',
+        it('should correctly report balance after multiple transfers',
            async () => {
-               await dContract.registerAddress(user1);
-
                await depositReceiverContract
-                   .sendTransaction({
+                   .deposit({
                        from: user1,
                        value: singleDepositAmount
                    });
                await depositReceiverContract
-                   .sendTransaction({
+                   .deposit({
                        from: user1,
                        value: singleDepositAmount
                    });
@@ -195,10 +194,8 @@ contract('DepositReceiver', accounts => {
                 const balanceAfterWithdrawal: any = await promisify(
                     cb => web3.eth.getBalance(user1, cb));
 
-                assert.isTrue(
-                    balanceAfterWithdrawal
-                        .sub(balanceBeforeWithdrawal)
-                        .greaterThan(0));
+                assert.isTrue(balanceAfterWithdrawal
+                    .greaterThan(balanceBeforeWithdrawal));
             });
 
         it('should subtract withdrawn amount from user balance',
