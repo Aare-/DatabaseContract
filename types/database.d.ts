@@ -1,5 +1,6 @@
 declare module 'database' {
-  import {
+    import BigNumber from 'bignumber.js';
+    import {
     AnyContract,
     Contract,
     ContractBase,
@@ -8,7 +9,7 @@ declare module 'database' {
     TruffleArtifacts
   } from 'truffle';
 
-  namespace database {
+    namespace database {
     interface Migrations extends ContractBase {
       setCompleted(
         completed: number,
@@ -65,13 +66,32 @@ declare module 'database' {
         ): Promise<DatabaseCallerBase>;
     }
 
+    interface DepositReceiverBase extends ContractBase {
+        deposit(options?: TransactionOptions): Promise<TransactionResult>;
+
+        withdraw(
+            ammount: BigNumber,
+            options?: TransactionOptions
+        ): Promise<TransactionResult>;
+
+        getBalance(options?: TransactionOptions): Promise<BigNumber>;
+    }
+
+    interface DepositReceiverContract extends Contract<DepositReceiverBase> {
+        'new'(
+            databaseAddress: Address,
+            options?: TransactionOptions
+        ): Promise<DepositReceiverBase>;
+    }
+
     interface DatabaseArtifacts extends TruffleArtifacts {
       require(name: string): AnyContract;
       require(name: './Migrations.sol'): MigrationsContract;
       require(name: './Database.sol'): DatabaseContract;
       require(name: './DatabaseCaller.sol'): DatabaseCallerContract;
+      require(name: './DepositReceiver.sol'): DepositReceiverContract ;
     }
   }
 
-  export = database;
+    export = database;
 }

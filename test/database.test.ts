@@ -15,6 +15,7 @@ contract('DatabaseBase', accounts => {
     const user1 = accounts[1];
     const user2 = accounts[2];
     const user3 = accounts[3];
+    const zeroAddress = '0x0000000000000000000000000000000000000000';
 
     beforeEach(async () => {
         dContract = await DatabaseContract.new();
@@ -36,6 +37,12 @@ contract('DatabaseBase', accounts => {
 
             await assertReverts(async () => {
                 await dContract.registerAddress(user1);
+            });
+        });
+
+        it('should allow only valid addresses', async () => {
+            await assertReverts( async () => {
+                await dContract.registerAddress(zeroAddress);
             });
         });
     });
@@ -213,9 +220,7 @@ contract('DatabaseBase', accounts => {
                 await dContract.registerAddress(user1);
 
                 const nextAddress = await dContract.getNextAddress(user2);
-                assert.deepEqual(
-                    nextAddress,
-                    '0x0000000000000000000000000000000000000000');
+                assert.deepEqual(nextAddress, zeroAddress);
             });
     });
 });

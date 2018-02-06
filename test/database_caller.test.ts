@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import {
-    DatabaseArtifacts, DatabaseBase, DatabaseCallerBase,
-    DatabaseCallerContract, DatabaseContract
+    DatabaseArtifacts, DatabaseBase, DatabaseCallerBase
 } from 'database';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';

@@ -15,6 +15,7 @@ contract Database {
         public
     {
         require(!isAddressRegistered(addressToRegister));
+        require(addressToRegister != address(0));
 
         address pointerToNextAddress =
             firstAddress == 0 ?

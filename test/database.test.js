@@ -16,6 +16,7 @@ contract('DatabaseBase', accounts => {
     const user1 = accounts[1];
     const user2 = accounts[2];
     const user3 = accounts[3];
+    const zeroAddress = '0x0000000000000000000000000000000000000000';
     beforeEach(() => __awaiter(this, void 0, void 0, function* () {
         dContract = yield DatabaseContract.new();
     }));
@@ -32,6 +33,11 @@ contract('DatabaseBase', accounts => {
             yield dContract.registerAddress(user1);
             yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
                 yield dContract.registerAddress(user1);
+            }));
+        }));
+        it('should allow only valid addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
+                yield dContract.registerAddress(zeroAddress);
             }));
         }));
     });
@@ -162,7 +168,7 @@ contract('DatabaseBase', accounts => {
         it('should return address(0) for not registered addresses', () => __awaiter(this, void 0, void 0, function* () {
             yield dContract.registerAddress(user1);
             const nextAddress = yield dContract.getNextAddress(user2);
-            chai_1.assert.deepEqual(nextAddress, '0x0000000000000000000000000000000000000000');
+            chai_1.assert.deepEqual(nextAddress, zeroAddress);
         }));
     });
 });
