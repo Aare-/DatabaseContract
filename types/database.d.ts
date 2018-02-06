@@ -28,11 +28,13 @@ declare module 'database' {
 
     interface DatabaseBase extends ContractBase {
         registerAddress(
-            addressToRegister: Address
+            addressToRegister: Address,
+            options?: TransactionOptions
         ): Promise<TransactionResult>;
 
         deRegisterAddress(
-            addressToDeRegister: Address
+            addressToDeRegister: Address,
+            options?: TransactionOptions
         ): Promise<TransactionResult>;
 
         isAddressRegistered(
@@ -41,7 +43,7 @@ declare module 'database' {
 
         getAllAddresses(): Promise<Address[]>;
 
-        deRegisterAll(): Promise<TransactionResult>;
+        deRegisterAll(options?: TransactionOptions): Promise<TransactionResult>;
 
         getNextAddress(
             predecessorAddress: Address

@@ -45,6 +45,14 @@ contract('DatabaseBase', accounts => {
                 await dContract.registerAddress(zeroAddress);
             });
         });
+
+        it('should allow only owner for adding addresses', async () => {
+            await assertReverts(async () => {
+                await dContract.registerAddress(
+                    user1,
+                    {from: user2});
+            });
+        });
     });
 
     describe('#addressDeletion', () => {
@@ -60,6 +68,15 @@ contract('DatabaseBase', accounts => {
                     await dContract.deRegisterAddress(user1);
                 });
             });
+
+        it('should allow only owner for deleting addresses', async () => {
+            await assertReverts(async () => {
+                await dContract.registerAddress(user1);
+                await dContract.deRegisterAddress(
+                    user1,
+                    {from: user2});
+            });
+        });
     });
 
     describe('#registrationStatus', () => {
@@ -192,6 +209,13 @@ contract('DatabaseBase', accounts => {
                     transactionReceipt1.receipt.gasUsed;
 
                 assert.isBelow(gasUsageDelta, 10000);
+            });
+
+        it('should allow only owner for deleting all addresses',
+            async () => {
+                await assertReverts(async () => {
+                    await dContract.deRegisterAll({from: user2});
+                });
             });
     });
 

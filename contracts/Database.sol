@@ -1,6 +1,8 @@
 pragma solidity 0.4.18;
 
-contract Database {
+import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
+
+contract Database is Ownable {
 
     struct RegistrationData {
         address next;
@@ -8,10 +10,12 @@ contract Database {
     }
 
     mapping (address => RegistrationData) private registeredAddresses;
+
     address public firstAddress;
     uint public addressCount = 0;
 
     function registerAddress(address addressToRegister)
+        onlyOwner
         public
     {
         require(!isAddressRegistered(addressToRegister));
@@ -36,6 +40,7 @@ contract Database {
     }
 
     function deRegisterAddress(address addressToDeRegister)
+        onlyOwner
         public
     {
         require(isAddressRegistered(addressToDeRegister));
@@ -72,6 +77,22 @@ contract Database {
         delete registeredAddresses[addressToDeRegister];
     }
 
+    function deRegisterAll()
+        onlyOwner
+        public
+    {
+        address addressPointer = firstAddress;
+
+        for(uint i = 0; i < addressCount; i++) {
+            address nextAddressPointer = registeredAddresses[addressPointer].next;
+            delete registeredAddresses[addressPointer];
+            addressPointer = nextAddressPointer;
+        }
+
+        addressCount = 0;
+        firstAddress = 0;
+    }
+
     function getAllAddresses()
         view
         public
@@ -87,21 +108,6 @@ contract Database {
         }
 
         return addressList;
-    }
-
-    function deRegisterAll()
-        public
-    {
-        address addressPointer = firstAddress;
-
-        for(uint i = 0; i < addressCount; i++) {
-            address nextAddressPointer = registeredAddresses[addressPointer].next;
-            delete registeredAddresses[addressPointer];
-            addressPointer = nextAddressPointer;
-        }
-
-        addressCount = 0;
-        firstAddress = 0;
     }
 
     function isAddressRegistered(address addressToCheck)

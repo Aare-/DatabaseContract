@@ -40,6 +40,11 @@ contract('DatabaseBase', accounts => {
                 yield dContract.registerAddress(zeroAddress);
             }));
         }));
+        it('should allow only owner for adding addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
+                yield dContract.registerAddress(user1, { from: user2 });
+            }));
+        }));
     });
     describe('#addressDeletion', () => {
         it('should allow to delete an address', () => __awaiter(this, void 0, void 0, function* () {
@@ -50,6 +55,12 @@ contract('DatabaseBase', accounts => {
         it('should revert when attempted to de-register not registered address', () => __awaiter(this, void 0, void 0, function* () {
             yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
                 yield dContract.deRegisterAddress(user1);
+            }));
+        }));
+        it('should allow only owner for deleting addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
+                yield dContract.registerAddress(user1);
+                yield dContract.deRegisterAddress(user1, { from: user2 });
             }));
         }));
     });
@@ -149,6 +160,11 @@ contract('DatabaseBase', accounts => {
             const gasUsageDelta = transactionReceipt2.receipt.gasUsed -
                 transactionReceipt1.receipt.gasUsed;
             chai_1.assert.isBelow(gasUsageDelta, 10000);
+        }));
+        it('should allow only owner for deleting all addresses', () => __awaiter(this, void 0, void 0, function* () {
+            yield helpers_1.assertReverts(() => __awaiter(this, void 0, void 0, function* () {
+                yield dContract.deRegisterAll({ from: user2 });
+            }));
         }));
     });
     describe('#getNextAddress', () => {
