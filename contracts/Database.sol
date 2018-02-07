@@ -27,6 +27,7 @@ contract Database is Ownable {
 
     event AddressRegistered(address indexed involvedAddress);
     event AddressDeRegistered(address indexed involvedAddress);
+    event AllAddressesRemoved();
 
     mapping (address => RegistrationData) private registeredAddresses;
     address public firstAddress;
@@ -37,18 +38,18 @@ contract Database is Ownable {
         onlyValidAddresses(addressToRegister)
         onlyNotRegisteredAddresses(addressToRegister)
     {
-        RegistrationData memory newRegistrationData =
+        RegistrationData memory registrationData =
             RegistrationData({
                 next: addressToRegister,
                 prev: 0
             });
 
         if (firstAddress != address(0)) {
-            newRegistrationData.next = firstAddress;
+            registrationData.next = firstAddress;
             registeredAddresses[firstAddress].prev = addressToRegister;
         }
 
-        registeredAddresses[addressToRegister] = newRegistrationData;
+        registeredAddresses[addressToRegister] = registrationData;
         firstAddress = addressToRegister;
 
         AddressRegistered(addressToRegister);
@@ -92,6 +93,7 @@ contract Database is Ownable {
         }
 
         firstAddress = 0;
+        AllAddressesRemoved();
     }
 
     function getAllAddresses()
@@ -105,8 +107,7 @@ contract Database is Ownable {
 
         for (uint i = 0; i < addressCount; i++) {
             addressList[i] = currentAddressPointer;
-            currentAddressPointer =
-                registeredAddresses[currentAddressPointer].next;
+            currentAddressPointer = registeredAddresses[currentAddressPointer].next;
         }
 
         return addressList;
