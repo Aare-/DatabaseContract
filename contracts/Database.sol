@@ -14,7 +14,7 @@ contract Database is Ownable {
 
     function registerAddress(address addressToRegister)
         onlyOwner
-        public
+        external
     {
         require(!isAddressRegistered(addressToRegister));
         require(addressToRegister != address(0));
@@ -37,7 +37,7 @@ contract Database is Ownable {
 
     function deRegisterAddress(address addressToDeRegister)
         onlyOwner
-        public
+        external
     {
         require(isAddressRegistered(addressToDeRegister));
 
@@ -72,7 +72,7 @@ contract Database is Ownable {
 
     function deRegisterAll()
         onlyOwner
-        public
+        external
     {
         address addressPointer = firstAddress;
         uint addressCount = countAddresses();

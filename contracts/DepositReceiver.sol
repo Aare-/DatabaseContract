@@ -38,7 +38,7 @@ contract DepositReceiver {
     }
 
     function deposit()
-        public
+        external
         payable
     {
         acceptDeposit(msg.sender, msg.value);
@@ -46,7 +46,7 @@ contract DepositReceiver {
 
     function withdraw(uint withdrawalAmount)
         onlyRegisteredAddresses(msg.sender)
-        public
+        external
     {
         require(withdrawalAmount > 0);
         require(balances[msg.sender] >= withdrawalAmount);
