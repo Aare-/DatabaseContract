@@ -10,30 +10,42 @@ contract Database is Ownable {
         address prev;
     }
 
+    modifier onlyValidAddresses(address addressToCheck) {
+        require(addressToCheck != address(0));
+        _;
+    }
+
+    modifier onlyNotRegisteredAddresses(address addressToCheck) {
+        require(!isAddressRegistered(addressToCheck));
+        _;
+    }
+
+    event NewAddressRegistered(address indexed addressToRegister);
+
     mapping (address => RegistrationData) private registeredAddresses;
     address public firstAddress;
 
     function registerAddress(address addressToRegister)
         external
         onlyOwner
+        onlyValidAddresses(addressToRegister)
+        onlyNotRegisteredAddresses(addressToRegister)
     {
-        require(!isAddressRegistered(addressToRegister));
-        require(addressToRegister != address(0));
-
-        address pointerToNextAddress =
-            firstAddress == 0 ?
-                addressToRegister :
-                firstAddress;
-        registeredAddresses[addressToRegister] =
+        RegistrationData memory newRegistrationData =
             RegistrationData({
-                next: pointerToNextAddress,
+                next: addressToRegister,
                 prev: 0
             });
 
-        if (firstAddress != 0)
+        if (firstAddress != address(0)) {
+            newRegistrationData.next = firstAddress;
             registeredAddresses[firstAddress].prev = addressToRegister;
+        }
 
+        registeredAddresses[addressToRegister] = newRegistrationData;
         firstAddress = addressToRegister;
+
+        NewAddressRegistered(addressToRegister);
     }
 
     function deRegisterAddress(address addressToDeRegister)
