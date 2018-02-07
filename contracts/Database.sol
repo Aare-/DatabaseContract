@@ -76,6 +76,7 @@ contract Database is Ownable {
         }
 
         delete registeredAddresses[addressToDeRegister];
+
         AddressDeRegistered(addressToDeRegister);
     }
 
@@ -83,13 +84,12 @@ contract Database is Ownable {
         external
         onlyOwner
     {
-        address addressPointer = firstAddress;
-        uint addressCount = countAddresses();
+        address pointer = firstAddress;
 
-        for (uint i = 0; i < addressCount; i++) {
-            address nextAddressPointer = registeredAddresses[addressPointer].next;
-            delete registeredAddresses[addressPointer];
-            addressPointer = nextAddressPointer;
+        while (registeredAddresses[pointer].next != 0) {
+            address toDelete = pointer;
+            pointer = registeredAddresses[pointer].next;
+            delete registeredAddresses[toDelete];
         }
 
         firstAddress = 0;
@@ -103,11 +103,11 @@ contract Database is Ownable {
     {
         uint addressCount = countAddresses();
         address[] memory addressList = new address[](addressCount);
-        address currentAddressPointer = firstAddress;
+        address pointer = firstAddress;
 
         for (uint i = 0; i < addressCount; i++) {
-            addressList[i] = currentAddressPointer;
-            currentAddressPointer = registeredAddresses[currentAddressPointer].next;
+            addressList[i] = pointer;
+            pointer = registeredAddresses[pointer].next;
         }
 
         return addressList;
@@ -134,14 +134,15 @@ contract Database is Ownable {
         view
         returns(uint)
     {
-        uint counter = 0;
-        address currentAddressPointer = firstAddress;
+        if (firstAddress == address(0)) {
+            return 0;
+        }
 
-        while (currentAddressPointer != 0) {
-            if (isAddressLast(currentAddressPointer))
-                currentAddressPointer = 0;
-            else
-                currentAddressPointer = registeredAddresses[currentAddressPointer].next;
+        uint counter = 1;
+        address pointer = firstAddress;
+
+        while (registeredAddresses[pointer].next != pointer) {
+            pointer = registeredAddresses[pointer].next;
             counter++;
         }
 
