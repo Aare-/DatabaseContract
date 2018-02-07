@@ -1,6 +1,10 @@
 pragma solidity 0.4.18;
 
 
+/**
+ * @title Database Interface
+ * @author Filip Loster (https://github.com/Aare-)
+ */
 contract DatabaseInterface {
     function firstAddress()
         public
@@ -19,6 +23,10 @@ contract DatabaseInterface {
 }
 
 
+/**
+ * @title Collect data from database contract
+ * @author Filip Loster (https://github.com/Aare-)
+ */
 contract DatabaseCaller {
     function collectData(address databaseAddress)
         public

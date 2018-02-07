@@ -3,6 +3,10 @@ pragma solidity 0.4.18;
 import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
 
 
+/**
+ * @title Database Interface
+ * @author Filip Loster (https://github.com/Aare-)
+ */
 contract DatabaseInterface {
     function isAddressRegistered(address addressToCheck)
         public
@@ -11,6 +15,10 @@ contract DatabaseInterface {
 }
 
 
+/**
+ * @title Allow for deposits and withdrawals for addresses registered in database contract
+ * @author Filip Loster (https://github.com/Aare-)
+ */
 contract DepositReceiver {
 
     using SafeMath for uint256;

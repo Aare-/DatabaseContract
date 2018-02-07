@@ -3,6 +3,11 @@ pragma solidity 0.4.18;
 import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
 
+/**
+ * @title Store registered addresses
+ * @dev Allows to store, remove and query for stored addresses
+ * @author Filip Loster (https://github.com/Aare-)
+ */
 contract Database is Ownable {
 
     struct RegistrationData {
