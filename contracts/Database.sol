@@ -2,6 +2,7 @@ pragma solidity 0.4.18;
 
 import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
 
+
 contract Database is Ownable {
 
     struct RegistrationData {
@@ -13,8 +14,8 @@ contract Database is Ownable {
     address public firstAddress;
 
     function registerAddress(address addressToRegister)
-        onlyOwner
         external
+        onlyOwner
     {
         require(!isAddressRegistered(addressToRegister));
         require(addressToRegister != address(0));
@@ -29,15 +30,15 @@ contract Database is Ownable {
                 prev: 0
             });
 
-        if(firstAddress != 0)
+        if (firstAddress != 0)
             registeredAddresses[firstAddress].prev = addressToRegister;
 
         firstAddress = addressToRegister;
     }
 
     function deRegisterAddress(address addressToDeRegister)
-        onlyOwner
         external
+        onlyOwner
     {
         require(isAddressRegistered(addressToDeRegister));
 
@@ -48,7 +49,7 @@ contract Database is Ownable {
 
         // when deleting last address
         if (deRegisteredAddressNext == addressToDeRegister) {
-            if(firstAddress == addressToDeRegister) {
+            if (firstAddress == addressToDeRegister) {
                 firstAddress = 0;
             } else {
                 registeredAddresses[deRegisteredAddressPrev].next =
@@ -56,11 +57,10 @@ contract Database is Ownable {
             }
         } else
         // when deleting first address
-        if(firstAddress == addressToDeRegister) {
+        if (firstAddress == addressToDeRegister) {
             firstAddress = deRegisteredAddressNext;
             registeredAddresses[deRegisteredAddressNext].prev = 0;
-        }
-        else {
+        } else {
             registeredAddresses[deRegisteredAddressNext].prev =
                 deRegisteredAddressPrev;
             registeredAddresses[deRegisteredAddressPrev].next =
@@ -71,13 +71,13 @@ contract Database is Ownable {
     }
 
     function deRegisterAll()
-        onlyOwner
         external
+        onlyOwner
     {
         address addressPointer = firstAddress;
         uint addressCount = countAddresses();
 
-        for(uint i = 0; i < addressCount; i++) {
+        for (uint i = 0; i < addressCount; i++) {
             address nextAddressPointer = registeredAddresses[addressPointer].next;
             delete registeredAddresses[addressPointer];
             addressPointer = nextAddressPointer;
@@ -87,15 +87,15 @@ contract Database is Ownable {
     }
 
     function getAllAddresses()
-        view
         public
+        view
         returns(address[])
     {
         uint addressCount = countAddresses();
         address[] memory addressList = new address[](addressCount);
         address currentAddressPointer = firstAddress;
 
-        for(uint i = 0; i < addressCount; i++) {
+        for (uint i = 0; i < addressCount; i++) {
             addressList[i] = currentAddressPointer;
             currentAddressPointer =
                 registeredAddresses[currentAddressPointer].next;
@@ -105,31 +105,31 @@ contract Database is Ownable {
     }
 
     function isAddressRegistered(address addressToCheck)
-        view
         public
+        view
         returns(bool)
     {
         return registeredAddresses[addressToCheck].next != 0;
     }
 
     function getNextAddress(address predecessor)
-        view
         public
+        view
         returns(address)
     {
         return registeredAddresses[predecessor].next;
     }
 
     function countAddresses()
-        view
         public
+        view
         returns(uint)
     {
         uint counter = 0;
         address currentAddressPointer = firstAddress;
 
-        while(currentAddressPointer != 0) {
-            if(registeredAddresses[currentAddressPointer].next == currentAddressPointer)
+        while (currentAddressPointer != 0) {
+            if (registeredAddresses[currentAddressPointer].next == currentAddressPointer)
                 currentAddressPointer = 0;
             else
                 currentAddressPointer = registeredAddresses[currentAddressPointer].next;

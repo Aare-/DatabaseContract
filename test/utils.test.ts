@@ -15,9 +15,7 @@ import {
   toSzabo,
   toWei
 } from '../utils';
-import {
-  assertNumberEqual,
-} from './helpers';
+import { assertNumberEqual } from './helpers';
 
 describe('#shiftNumber', () => {
   it('should return the number if decimals is 0', () => {

@@ -2,12 +2,14 @@ pragma solidity 0.4.18;
 
 import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
 
+
 contract DatabaseInterface {
     function isAddressRegistered(address addressToCheck)
-        view
         public
+        view
         returns(bool);
 }
+
 
 contract DepositReceiver {
 
@@ -21,7 +23,7 @@ contract DepositReceiver {
 
     event FundsWithdrawn(address indexed forAccount, uint256 amount);
 
-    address databaseAddress;
+    address private databaseAddress;
     mapping (address => uint) private balances;
 
     function DepositReceiver(address databaseAddressToUse)
@@ -45,8 +47,8 @@ contract DepositReceiver {
     }
 
     function withdraw(uint withdrawalAmount)
-        onlyRegisteredAddresses(msg.sender)
         external
+        onlyRegisteredAddresses(msg.sender)
     {
         require(withdrawalAmount > 0);
         require(balances[msg.sender] >= withdrawalAmount);
@@ -60,8 +62,8 @@ contract DepositReceiver {
     }
 
     function getBalance()
-        onlyRegisteredAddresses(msg.sender)
         public
+        onlyRegisteredAddresses(msg.sender)
         view
         returns(uint)
     {
@@ -69,8 +71,8 @@ contract DepositReceiver {
     }
 
     function acceptDeposit(address sender, uint depositAmount)
-        onlyRegisteredAddresses(sender)
         private
+        onlyRegisteredAddresses(sender)
     {
         balances[sender] = balances[sender].add(depositAmount);
     }

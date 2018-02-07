@@ -1,21 +1,23 @@
 pragma solidity 0.4.18;
 
+
 contract DatabaseInterface {
     function firstAddress()
-        view
         public
+        view
         returns(address);
 
     function getNextAddress(address predecessor)
-        view
         public
+        view
         returns(address);
 
     function countAddresses()
-        view
         public
+        view
         returns(uint);
 }
+
 
 contract DatabaseCaller {
     function collectData(address databaseAddress)
@@ -28,7 +30,7 @@ contract DatabaseCaller {
         address[] memory addressList = new address[](addressCount);
         address pointerAddress = database.firstAddress();
 
-        for(uint i = 0; i < addressCount; i++) {
+        for (uint i = 0; i < addressCount; i++) {
             addressList[i] = pointerAddress;
             pointerAddress = database.getNextAddress(addressList[i]);
         }
