@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import {DatabaseArtifacts, DatabaseBase} from 'database';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
-import {assertNumberEqual, assertReverts} from './helpers';
+import {assertNumberEqual, assertReverts, ZERO_ADDRESS} from './helpers';
 
 declare const web3: Web3;
 declare const artifacts: DatabaseArtifacts;
@@ -16,7 +16,6 @@ contract('DatabaseBase', accounts => {
     const user1 = accounts[1];
     const user2 = accounts[2];
     const user3 = accounts[3];
-    const zeroAddress = '0x0000000000000000000000000000000000000000';
 
     beforeEach(async () => {
         dContract = await DatabaseContract.new();
@@ -43,7 +42,7 @@ contract('DatabaseBase', accounts => {
 
         it('should allow only valid addresses', async () => {
             await assertReverts( async () => {
-                await dContract.registerAddress(zeroAddress);
+                await dContract.registerAddress(ZERO_ADDRESS);
             });
         });
 
@@ -245,7 +244,7 @@ contract('DatabaseBase', accounts => {
                 await dContract.registerAddress(user1);
 
                 const nextAddress = await dContract.getNextAddress(user2);
-                assert.deepEqual(nextAddress, zeroAddress);
+                assert.deepEqual(nextAddress, ZERO_ADDRESS);
             });
     });
 

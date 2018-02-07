@@ -5,8 +5,7 @@ import {
 } from 'database';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
-import {fromEth} from '../utils';
-import {promisify} from '../utils/common';
+import {fromEth, Web3Utils} from '../utils';
 import {
     assertNumberEqual, assertReverts
 } from './helpers';
@@ -19,6 +18,8 @@ const DatabaseContract = artifacts.require('./Database.sol');
 const DepositReceiverContract  = artifacts.require('./DepositReceiver.sol');
 
 contract('DepositReceiver', accounts => {
+    const w3Utils: Web3Utils = new Web3Utils(web3);
+
     let dContract: DatabaseBase;
     let depositReceiverContract: DepositReceiverBase;
 
@@ -185,14 +186,14 @@ contract('DepositReceiver', accounts => {
 
         it('should allow full balance withdrawal',
             async () => {
-                const balanceBeforeWithdrawal: any = await promisify(
-                    cb => web3.eth.getBalance(user1, cb));
+                const balanceBeforeWithdrawal: any =
+                    await w3Utils.getBalance(user1);
 
                 await depositReceiverContract
                     .withdraw(singleDepositAmount, {from: user1});
 
-                const balanceAfterWithdrawal: any = await promisify(
-                    cb => web3.eth.getBalance(user1, cb));
+                const balanceAfterWithdrawal: any =
+                    await w3Utils.getBalance(user1);
 
                 assert.isTrue(balanceAfterWithdrawal
                     .greaterThan(balanceBeforeWithdrawal));
