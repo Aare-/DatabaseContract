@@ -13,17 +13,16 @@ contract DepositReceiver {
 
     using SafeMath for uint256;
 
-    address databaseAddress;
-
-    mapping (address => uint) private balances;
-
-    event FundsWithdrawn(address indexed forAccount, uint256 amount);
-
     modifier onlyRegisteredAddresses(address addressToTest) {
         DatabaseInterface dInterface = DatabaseInterface(databaseAddress);
         require(dInterface.isAddressRegistered(addressToTest));
         _;
     }
+
+    event FundsWithdrawn(address indexed forAccount, uint256 amount);
+
+    address databaseAddress;
+    mapping (address => uint) private balances;
 
     function DepositReceiver(address databaseAddressToUse)
         public

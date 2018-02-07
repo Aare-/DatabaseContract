@@ -5,7 +5,7 @@ import {
 } from 'database';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
-import {fromEth, fromGwei} from '../utils';
+import {fromEth} from '../utils';
 import {promisify} from '../utils/common';
 import {
     assertNumberEqual, assertReverts

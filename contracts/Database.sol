@@ -10,9 +10,7 @@ contract Database is Ownable {
     }
 
     mapping (address => RegistrationData) private registeredAddresses;
-
     address public firstAddress;
-    uint public addressCount = 0;
 
     function registerAddress(address addressToRegister)
         onlyOwner
@@ -31,12 +29,10 @@ contract Database is Ownable {
                 prev: 0
             });
 
-        if(firstAddress != 0) {
+        if(firstAddress != 0)
             registeredAddresses[firstAddress].prev = addressToRegister;
-        }
 
         firstAddress = addressToRegister;
-        addressCount += 1;
     }
 
     function deRegisterAddress(address addressToDeRegister)
@@ -45,34 +41,31 @@ contract Database is Ownable {
     {
         require(isAddressRegistered(addressToDeRegister));
 
-        if(addressCount == 1) {
-            firstAddress = 0;
-        } else {
-            address deRegisteredAddressNext =
-                registeredAddresses[addressToDeRegister].next;
-            address deRegisteredAddressPrev =
-                registeredAddresses[addressToDeRegister].prev;
+        address deRegisteredAddressNext =
+            registeredAddresses[addressToDeRegister].next;
+        address deRegisteredAddressPrev =
+            registeredAddresses[addressToDeRegister].prev;
 
-            // when deleting first address
+        // when deleting last address
+        if (deRegisteredAddressNext == addressToDeRegister) {
             if(firstAddress == addressToDeRegister) {
-                firstAddress = deRegisteredAddressNext;
-                registeredAddresses[deRegisteredAddressNext].prev = 0;
-            } else
-            // when deleting last address
-            if (deRegisteredAddressNext == addressToDeRegister) {
+                firstAddress = 0;
+            } else {
                 registeredAddresses[deRegisteredAddressPrev].next =
                     deRegisteredAddressPrev;
             }
-            // when deleting address in the middle
-            else {
-                registeredAddresses[deRegisteredAddressNext].prev =
-                    deRegisteredAddressPrev;
-                registeredAddresses[deRegisteredAddressPrev].next =
-                    deRegisteredAddressNext;
-            }
+        } else
+        // when deleting first address
+        if(firstAddress == addressToDeRegister) {
+            firstAddress = deRegisteredAddressNext;
+            registeredAddresses[deRegisteredAddressNext].prev = 0;
         }
-
-        addressCount -= 1;
+        else {
+            registeredAddresses[deRegisteredAddressNext].prev =
+                deRegisteredAddressPrev;
+            registeredAddresses[deRegisteredAddressPrev].next =
+                deRegisteredAddressNext;
+        }
 
         delete registeredAddresses[addressToDeRegister];
     }
@@ -82,6 +75,7 @@ contract Database is Ownable {
         public
     {
         address addressPointer = firstAddress;
+        uint addressCount = countAddresses();
 
         for(uint i = 0; i < addressCount; i++) {
             address nextAddressPointer = registeredAddresses[addressPointer].next;
@@ -89,7 +83,6 @@ contract Database is Ownable {
             addressPointer = nextAddressPointer;
         }
 
-        addressCount = 0;
         firstAddress = 0;
     }
 
@@ -98,6 +91,7 @@ contract Database is Ownable {
         public
         returns(address[])
     {
+        uint addressCount = countAddresses();
         address[] memory addressList = new address[](addressCount);
         address currentAddressPointer = firstAddress;
 
@@ -124,5 +118,24 @@ contract Database is Ownable {
         returns(address)
     {
         return registeredAddresses[predecessor].next;
+    }
+
+    function countAddresses()
+        view
+        public
+        returns(uint)
+    {
+        uint counter = 0;
+        address currentAddressPointer = firstAddress;
+
+        while(currentAddressPointer != 0) {
+            if(registeredAddresses[currentAddressPointer].next == currentAddressPointer)
+                currentAddressPointer = 0;
+            else
+                currentAddressPointer = registeredAddresses[currentAddressPointer].next;
+            counter++;
+        }
+
+        return counter;
     }
 }

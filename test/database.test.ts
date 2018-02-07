@@ -1,8 +1,9 @@
+import BigNumber from 'bignumber.js';
 import { assert } from 'chai';
 import {DatabaseArtifacts, DatabaseBase} from 'database';
 import {ContractContextDefinition} from 'truffle';
 import * as Web3 from 'web3';
-import {assertReverts} from './helpers';
+import {assertNumberEqual, assertReverts} from './helpers';
 
 declare const web3: Web3;
 declare const artifacts: DatabaseArtifacts;
@@ -245,6 +246,37 @@ contract('DatabaseBase', accounts => {
 
                 const nextAddress = await dContract.getNextAddress(user2);
                 assert.deepEqual(nextAddress, zeroAddress);
+            });
+    });
+
+    describe('#countAddresses', () => {
+       it('should correctly report address count for empty list',
+           async () => {
+                const addressCount = await dContract.countAddresses();
+
+                assertNumberEqual(addressCount, new BigNumber(0));
+           });
+
+       it('should correctly report address count for populated list',
+            async () => {
+                await dContract.registerAddress(user1);
+                await dContract.registerAddress(user2);
+                await dContract.registerAddress(user3);
+                const addressCount = await dContract.countAddresses();
+
+                assertNumberEqual(addressCount, new BigNumber(3));
+            });
+
+       it('should correctly report size after address changes',
+            async () => {
+                await dContract.registerAddress(user1);
+                await dContract.deRegisterAddress(user1);
+                await dContract.registerAddress(user2);
+                await dContract.registerAddress(user3);
+
+                const addressCount = await dContract.countAddresses();
+
+                assertNumberEqual(addressCount, new BigNumber(2));
             });
     });
 });

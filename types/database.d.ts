@@ -48,6 +48,10 @@ declare module 'database' {
         getNextAddress(
             predecessorAddress: Address
         ): Promise<Address>;
+
+        countAddresses(
+            options?: TransactionOptions
+        ): Promise<BigNumber>;
     }
 
     interface DatabaseCallerBase extends ContractBase {

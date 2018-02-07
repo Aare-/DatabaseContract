@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const bignumber_js_1 = require("bignumber.js");
 const chai_1 = require("chai");
 const helpers_1 = require("./helpers");
 const DatabaseContract = artifacts.require('./Database.sol');
@@ -185,6 +186,27 @@ contract('DatabaseBase', accounts => {
             yield dContract.registerAddress(user1);
             const nextAddress = yield dContract.getNextAddress(user2);
             chai_1.assert.deepEqual(nextAddress, zeroAddress);
+        }));
+    });
+    describe('#countAddresses', () => {
+        it('should correctly report address count for empty list', () => __awaiter(this, void 0, void 0, function* () {
+            const addressCount = yield dContract.countAddresses();
+            helpers_1.assertNumberEqual(addressCount, new bignumber_js_1.default(0));
+        }));
+        it('should correctly report address count for populated list', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            const addressCount = yield dContract.countAddresses();
+            helpers_1.assertNumberEqual(addressCount, new bignumber_js_1.default(3));
+        }));
+        it('should correctly report size after address changes', () => __awaiter(this, void 0, void 0, function* () {
+            yield dContract.registerAddress(user1);
+            yield dContract.deRegisterAddress(user1);
+            yield dContract.registerAddress(user2);
+            yield dContract.registerAddress(user3);
+            const addressCount = yield dContract.countAddresses();
+            helpers_1.assertNumberEqual(addressCount, new bignumber_js_1.default(2));
         }));
     });
 });
