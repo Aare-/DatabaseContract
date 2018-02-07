@@ -20,7 +20,13 @@ contract Database is Ownable {
         _;
     }
 
-    event NewAddressRegistered(address indexed addressToRegister);
+    modifier onlyRegisteredAddresses(address addressToCheck) {
+        require(isAddressRegistered(addressToCheck));
+        _;
+    }
+
+    event AddressRegistered(address indexed involvedAddress);
+    event AddressDeRegistered(address indexed involvedAddress);
 
     mapping (address => RegistrationData) private registeredAddresses;
     address public firstAddress;
@@ -45,41 +51,31 @@ contract Database is Ownable {
         registeredAddresses[addressToRegister] = newRegistrationData;
         firstAddress = addressToRegister;
 
-        NewAddressRegistered(addressToRegister);
+        AddressRegistered(addressToRegister);
     }
 
     function deRegisterAddress(address addressToDeRegister)
         external
         onlyOwner
+        onlyRegisteredAddresses(addressToDeRegister)
     {
-        require(isAddressRegistered(addressToDeRegister));
+        RegistrationData storage entity = registeredAddresses[addressToDeRegister];
 
-        address deRegisteredAddressNext =
-            registeredAddresses[addressToDeRegister].next;
-        address deRegisteredAddressPrev =
-            registeredAddresses[addressToDeRegister].prev;
-
-        // when deleting last address
-        if (deRegisteredAddressNext == addressToDeRegister) {
-            if (firstAddress == addressToDeRegister) {
+        if (isAddressLast(addressToDeRegister)) {
+            if (isAddressFirst(addressToDeRegister)) { // only address
                 firstAddress = 0;
-            } else {
-                registeredAddresses[deRegisteredAddressPrev].next =
-                    deRegisteredAddressPrev;
+            } else { // last address
+                registeredAddresses[entity.prev].next = entity.prev;
             }
-        } else
-        // when deleting first address
-        if (firstAddress == addressToDeRegister) {
-            firstAddress = deRegisteredAddressNext;
-            registeredAddresses[deRegisteredAddressNext].prev = 0;
-        } else {
-            registeredAddresses[deRegisteredAddressNext].prev =
-                deRegisteredAddressPrev;
-            registeredAddresses[deRegisteredAddressPrev].next =
-                deRegisteredAddressNext;
+        } else if (isAddressFirst(addressToDeRegister)) { // first address
+            firstAddress = entity.next;
+        } else { // address in the middle
+            registeredAddresses[entity.next].prev = entity.prev;
+            registeredAddresses[entity.prev].next = entity.next;
         }
 
         delete registeredAddresses[addressToDeRegister];
+        AddressDeRegistered(addressToDeRegister);
     }
 
     function deRegisterAll()
@@ -141,7 +137,7 @@ contract Database is Ownable {
         address currentAddressPointer = firstAddress;
 
         while (currentAddressPointer != 0) {
-            if (registeredAddresses[currentAddressPointer].next == currentAddressPointer)
+            if (isAddressLast(currentAddressPointer))
                 currentAddressPointer = 0;
             else
                 currentAddressPointer = registeredAddresses[currentAddressPointer].next;
@@ -149,5 +145,21 @@ contract Database is Ownable {
         }
 
         return counter;
+    }
+
+    function isAddressFirst(address registeredAddressToCheck)
+        private
+        view
+        returns(bool)
+    {
+        return firstAddress == registeredAddressToCheck;
+    }
+
+    function isAddressLast(address registeredAddressToCheck)
+        private
+        view
+        returns(bool)
+    {
+        return registeredAddresses[registeredAddressToCheck].next == registeredAddressToCheck;
     }
 }
