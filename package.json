@@ -10,7 +10,8 @@
     "lint:tslint": "tslint --project .",
     "lint:tslint:fix": "tslint --fix --project .",
     "lint:solhint": "solhint contracts/**/*.sol test/**/*.sol build/flat/**/*.sol",
-    "format": "prettier --write *.ts **/*.ts test/**/*.ts"
+    "format": "prettier --write *.ts **/*.ts test/**/*.ts",
+    "precommit": "lint-staged"
   },
   "author": "Filip Loster",
   "license": "ISC",
@@ -30,7 +31,15 @@
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
   },
+  "lint-staged": {
+    "*.ts": [
+      "format",
+      "git add"
+    ]
+  },
   "dependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^6.1.0",
     "zeppelin-solidity": "^1.5.0"
   }
 }

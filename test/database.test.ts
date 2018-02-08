@@ -77,6 +77,8 @@ contract('DatabaseBase', accounts => {
     it('should correctly report registered addresses', async () => {
       await performOperationsOnContract('r1');
       assert.isTrue(await dContract.isAddressRegistered(user1));
+
+      dContract.isAddressRegistered as any;
     });
 
     it('should correctly report not registered addresses', async () => {

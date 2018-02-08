@@ -123,7 +123,7 @@ contract Database is Ownable {
         view
         returns(bool)
     {
-        return registeredAddresses[addressToCheck].next != 0;
+        return registeredAddresses[addressToCheck].next != address(0);
     }
 
     function getNextAddress(address predecessor)
