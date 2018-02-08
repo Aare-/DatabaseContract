@@ -75,7 +75,7 @@ contract('DatabaseBase', accounts => {
 
   describe('#registrationStatus', () => {
     it('should correctly report registered addresses', async () => {
-      await dContract.registerAddress(user1);
+      await performOperationsOnContract('r1');
       assert.isTrue(await dContract.isAddressRegistered(user1));
     });
 
@@ -84,9 +84,9 @@ contract('DatabaseBase', accounts => {
     });
 
     it('should report status after insertion and deletion', async () => {
-      await dContract.registerAddress(user1);
+      await performOperationsOnContract('r1');
       assert.isTrue(await dContract.isAddressRegistered(user1));
-      await dContract.deRegisterAddress(user1);
+      await performOperationsOnContract('d1');
       assert.isFalse(await dContract.isAddressRegistered(user1));
     });
   });
@@ -99,7 +99,7 @@ contract('DatabaseBase', accounts => {
     });
 
     it('should return registered address', async () => {
-      await dContract.registerAddress(user1);
+      await performOperationsOnContract('r1');
       const addressesList = await dContract.getAllAddresses();
 
       assert.deepEqual(addressesList, [user1]);
