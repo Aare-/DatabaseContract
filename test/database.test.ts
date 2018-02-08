@@ -17,67 +17,6 @@ contract('DatabaseBase', accounts => {
   const user2 = accounts[2];
   const user3 = accounts[3];
 
-  enum OperationType {
-    Registration,
-    DeRegistration,
-    Invalid
-  }
-
-  /*
-   Performs operations on dContract using following scheme:
-   <d/r><1/2/3>
-   where
-   r - registers account
-   d - de-registers account
-   1,2,3 - account number
-   */
-  async function performOperationsOnContract(operations: string) {
-    operations = operations.replace(/ /g, '');
-    const operationsCount = Math.floor(operations.length / 2);
-
-    for (let i = 0; i < operationsCount; i++) {
-      const operationType: OperationType = getOperationType(operations[i * 2]);
-      const account = getOperationAccount(operations[i * 2 + 1]);
-
-      if (operationType === OperationType.Invalid || account === ZERO_ADDRESS) {
-        throw new Error('Error in provided operations list: ' + operations);
-      }
-
-      switch (operationType) {
-        case OperationType.Registration:
-          await dContract.registerAddress(account);
-          break;
-        case OperationType.DeRegistration:
-          await dContract.deRegisterAddress(account);
-          break;
-      }
-    }
-  }
-
-  function getOperationType(operationSymbol: string): OperationType {
-    switch (operationSymbol) {
-      case 'r':
-        return OperationType.Registration;
-      case 'd':
-        return OperationType.DeRegistration;
-      default:
-        return OperationType.Invalid;
-    }
-  }
-
-  function getOperationAccount(accountSymbol: string) {
-    switch (accountSymbol) {
-      case '1':
-        return user1;
-      case '2':
-        return user2;
-      case '3':
-        return user3;
-      default:
-        return ZERO_ADDRESS;
-    }
-  }
-
   beforeEach(async () => {
     dContract = await DatabaseContract.new();
   });
@@ -289,4 +228,70 @@ contract('DatabaseBase', accounts => {
       assertNumberEqual(addressCount, new BigNumber(2));
     });
   });
+
+  enum OperationType {
+    Registration,
+    DeRegistration,
+    Invalid
+  }
+
+  /*
+     Performs operations on dContract using following scheme:
+     <action><account_number>
+     where:
+     action - Denotes action to perform, where applicable action symcols are:
+      'd': de-register address
+      'r': register address
+      account_number - Denotes account to use, avaliable symbols are 1, 2 or 3
+
+     Example: Following string would result in registration of account 1
+     followed by it's de-registration
+     'r1 d1'
+     */
+  async function performOperationsOnContract(operations: string) {
+    operations = operations.replace(/ /g, '').toLowerCase();
+    const operationsCount = Math.floor(operations.length / 2);
+
+    for (let i = 0; i < operationsCount; i++) {
+      const operationType: OperationType = getOperationType(operations[i * 2]);
+      const account = getOperationAccount(operations[i * 2 + 1]);
+
+      if (operationType === OperationType.Invalid || account === ZERO_ADDRESS) {
+        throw new Error('Error in provided operations list: ' + operations);
+      }
+
+      switch (operationType) {
+        case OperationType.Registration:
+          await dContract.registerAddress(account);
+          break;
+        case OperationType.DeRegistration:
+          await dContract.deRegisterAddress(account);
+          break;
+      }
+    }
+  }
+
+  function getOperationType(operationSymbol: string): OperationType {
+    switch (operationSymbol) {
+      case 'r':
+        return OperationType.Registration;
+      case 'd':
+        return OperationType.DeRegistration;
+      default:
+        return OperationType.Invalid;
+    }
+  }
+
+  function getOperationAccount(accountSymbol: string) {
+    switch (accountSymbol) {
+      case '1':
+        return user1;
+      case '2':
+        return user2;
+      case '3':
+        return user3;
+      default:
+        return ZERO_ADDRESS;
+    }
+  }
 });
